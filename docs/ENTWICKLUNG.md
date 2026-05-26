@@ -56,10 +56,8 @@ npm run validate             # Manifest prüfen
 npm run dev-server           # liefert das Task Pane unter https://localhost:3000 aus
 ```
 
-Sideloading in Outlook (vereinfacht; alternativ `npm start`):
-
-- **Neues/Web-Outlook:** Einstellungen → Add-Ins verwalten → eigenes Add-in → `addin/manifest.xml` hochladen.
-- Beim ersten Start das Dev-Zertifikat akzeptieren (`npx office-addin-dev-certs install`).
+Sideloading in Outlook: ausführliche Schritt-für-Schritt-Anleitung (inkl. Dev-Zertifikat,
+macOS `wef`-Ordner, Windows/Web) in [**docs/SIDELOAD.md**](SIDELOAD.md).
 
 Im Task Pane: **Zusammenfassen** / **Einordnen** auf der geöffneten E-Mail, **Tag vorbereiten** für das Tagesbriefing.
 

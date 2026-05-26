@@ -90,7 +90,8 @@ Ein erster lauffähiger vertikaler Schnitt des Produkts liegt im Repo:
   die Backend-Adresse wird ohne Datenbank in den **RoamingSettings** des Postfachs gespeichert.
   Build, Typecheck und Manifest-Validierung bestanden.
 - **`backend/eval/`** — Benchmark-Harness mit Golden-Set (dokumentierte Evaluation, EU-AI-Act-tauglich).
-- Start- und Testanleitung: [**docs/ENTWICKLUNG.md**](docs/ENTWICKLUNG.md).
+- Start- und Testanleitung: [**docs/ENTWICKLUNG.md**](docs/ENTWICKLUNG.md);
+  Outlook-Sideload Schritt für Schritt: [**docs/SIDELOAD.md**](docs/SIDELOAD.md).
 
 Offene organisatorische/rechtliche Punkte (Vergaberecht, BSI, EU AI Act, DSGVO, Pilotbehörde …)
 sind als [GitHub-Issues](https://github.com/NicoMario/AmtsGeist/issues) erfasst.
