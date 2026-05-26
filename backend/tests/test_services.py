@@ -5,6 +5,8 @@ from app.schemas import (
     BriefingLLMOutput,
     BriefingRequest,
     CalendarEvent,
+    DraftReplyLLMOutput,
+    DraftReplyRequest,
     EmailIn,
     SummarizeRequest,
     SummaryLLMOutput,
@@ -12,6 +14,7 @@ from app.schemas import (
     TriageRequest,
 )
 from app.services import briefing as briefing_service
+from app.services import draft as draft_service
 from app.services import summarize as summarize_service
 from app.services import triage as triage_service
 from tests.helpers import FakeRouter
@@ -92,6 +95,45 @@ async def test_summarize_multiple_forces_llm():
     resp = await summarize_service.summarize(req, router, _settings())
     assert resp.action_items == ["A", "B"]
     assert router.calls[0]["force_llm"] is True  # mehrere Mails -> LLM-Tier
+
+
+@pytest.mark.asyncio
+async def test_draft_reply_includes_intent_in_prompt():
+    router = FakeRouter(
+        {
+            DraftReplyLLMOutput: DraftReplyLLMOutput(
+                subject="AW: Ummeldung", body="Sehr geehrte Frau [Name], ..."
+            )
+        }
+    )
+    req = DraftReplyRequest(
+        email=EmailIn(subject="Ummeldung", body="Welche Unterlagen brauche ich?"),
+        intent="Hinweis auf Online-Terminbuchung geben",
+    )
+    resp = await draft_service.draft_reply(req, router, _settings())
+    assert resp.subject == "AW: Ummeldung"
+    assert router.calls[0]["force_llm"] is True
+    assert "Online-Terminbuchung" in router.calls[0]["user"]
+
+
+@pytest.mark.asyncio
+async def test_triage_many_returns_one_per_email():
+    router = FakeRouter(
+        {
+            TriageLLMOutput: TriageLLMOutput(
+                category="Intern",
+                priority=2,
+                deadline_iso="",
+                suggested_folder="Intern",
+                reasoning="x",
+                confidence=0.9,
+            )
+        }
+    )
+    emails = [EmailIn(body="a"), EmailIn(body="b"), EmailIn(body="c")]
+    results = await triage_service.triage_many(emails, router, _settings())
+    assert len(results) == 3
+    assert all(r.result.category.value == "Intern" for r in results)
 
 
 @pytest.mark.asyncio

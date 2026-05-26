@@ -19,22 +19,45 @@
           <button id="btn-summarize" type="button">Zusammenfassen</button>
           <button id="btn-triage" type="button">Einordnen</button>
         </div>
+        <input
+          id="reply-intent"
+          type="text"
+          placeholder="Optional: Hinweise für die Antwort (Stichworte)"
+        />
+        <button id="btn-draft" type="button">Antwort entwerfen</button>
         <div id="mail-result" class="result" hidden></div>
+      </section>
+
+      <section class="card">
+        <h2>Posteingang</h2>
+        <p class="hint">Die jüngsten Mails einordnen und nach Priorität sortieren (via EWS).</p>
+        <button id="btn-inbox" type="button">Posteingang einordnen</button>
+        <div id="inbox-result" class="result" hidden></div>
       </section>
 
       <section class="card">
         <h2>Tagesbriefing</h2>
         <p class="hint">
-          Geöffneten Termin übernehmen (ohne Berechtigungen) oder Termine manuell eintragen
-          (eine Zeile je Termin, Format <code>HH:MM Betreff</code>):
+          Kalender wird – falls verfügbar – automatisch geladen. Sonst Termine manuell
+          eintragen (eine Zeile, Format <code>HH:MM Betreff</code>) oder geöffneten Termin übernehmen.
         </p>
-        <button id="btn-add-appt" type="button">Aktuellen Termin übernehmen</button>
+        <div class="btn-row">
+          <button id="btn-load-cal" type="button">Kalender laden</button>
+          <button id="btn-add-appt" type="button">Geöffneten Termin übernehmen</button>
+        </div>
         <div id="appt-note" class="hint"></div>
         <textarea id="events-input" rows="4">09:00 Teamrunde Referat 32
 11:00 Bürgersprechstunde
 14:30 Bauausschuss-Vorbesprechung</textarea>
         <button id="btn-briefing" type="button">Tag vorbereiten</button>
         <div id="briefing-result" class="result" hidden></div>
+      </section>
+
+      <section class="card">
+        <h2>Einstellungen</h2>
+        <p class="hint">Backend-Adresse (im Postfach gespeichert, ohne Admin):</p>
+        <input id="backend-url" type="text" placeholder="https://rz.behörde.de:8000" />
+        <button id="btn-save-settings" type="button">Speichern</button>
       </section>
 
       <p id="status" class="status"></p>

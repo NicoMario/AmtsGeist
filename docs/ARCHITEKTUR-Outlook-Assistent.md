@@ -286,10 +286,18 @@ zurück ins Task Pane.
 Posteingang server-seitig via EWS.
 
 **(3) Kalender prüfen & Tag vorbereiten.** Datenquelle graph-frei: der **aktuell geöffnete Termin**
-via Office.js (sofort, ohne Berechtigung) bzw. der **Tageskalender via EWS-Dienstkonto**, dazu die
-als „Frist/Eskalation" markierten Mails und offene Fristen → erzeugt ein **Tagesbriefing**: Termine
-mit Vorbereitungshinweisen, fällige Fristen, vorgeschlagene Fokus-Blöcke. Dies ist die **unbesetzte
-Nische** laut Recherche.
+via Office.js (sofort, ohne Berechtigung), der **Tageskalender via EWS** (`makeEwsRequestAsync`,
+eigenes Postfach) oder manuelle Eingabe, dazu die als „Frist/Eskalation" markierten Mails → erzeugt
+ein **Tagesbriefing**: Termine mit Vorbereitungshinweisen, fällige Fristen, Fokus-Blöcke. Dies ist
+die **unbesetzte Nische** laut Recherche.
+
+**(4) Antwort entwerfen.** Auf einer Bürgeranfrage → optionale Stichworte → `/draft-reply` erzeugt
+einen **DSGVO-konformen Entwurf** (Verwaltungston, Platzhalter statt erfundener Angaben), der via
+`displayReplyForm` direkt im Outlook-Antwortfenster geöffnet wird (Mensch prüft & sendet).
+
+**(5) Posteingang einordnen.** Die jüngsten Mails werden per **EWS** gelesen, gestapelt an
+`/triage/batch` gegeben und **nach Priorität sortiert** angezeigt — ein „Tagesstart" über das
+gesamte Postfach, ganz ohne Graph/Admin.
 
 ---
 

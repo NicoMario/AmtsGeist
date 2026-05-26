@@ -6,6 +6,22 @@ Drei Teile: **Ollama** (Modelle), das **Backend** ("das Gehirn") und das **Outlo
 addin/  (Outlook, Office.js)  ──HTTPS──▶  backend/  (FastAPI)  ──▶  Ollama (qwen2.5:3b / :7b)
 ```
 
+## Funktionen (alle ohne Entra/Azure/Admin)
+
+| Funktion | Wie | Zugriff |
+|---|---|---|
+| E-Mail **zusammenfassen** | aktuelle Mail via Office.js → `/summarize` | keine Sonderrechte |
+| E-Mail **einordnen** + Kategorie setzen | `/triage` → `item.categories` | keine Sonderrechte |
+| **Antwort entwerfen** (DSGVO-konform) | `/draft-reply` → `displayReplyForm` | keine Sonderrechte |
+| **Posteingang einordnen** (Stapel, sortiert) | EWS `getRecentInbox` → `/triage/batch` | EWS (klass. Outlook) |
+| **Tagesbriefing** | EWS-Kalender / geöffneter Termin / manuell → `/briefing` | EWS bzw. keine |
+| Backend-Adresse merken | RoamingSettings (im Postfach) | keine Sonderrechte |
+
+> **Der USP:** Kalender- und Posteingangs-Zugriff laufen über **EWS via `makeEwsRequestAsync`** —
+> mit dem Token, das das Add-in ohnehin hat. **Keine Azure-/Entra-App, kein Admin-Consent.**
+> EWS funktioniert im **klassischen Outlook (Desktop/Mac)**; im neuen/Web-Outlook greift der
+> Fallback (manuelle Termineingabe, Einzel-Triage der geöffneten Mail).
+
 ## Voraussetzungen
 
 - Ollama mit den Modellen: `ollama pull qwen2.5:3b && ollama pull qwen2.5:7b`
@@ -27,7 +43,7 @@ Tests und Benchmark:
 
 ```bash
 pip install -r requirements-dev.txt
-python -m pytest -q          # 13 Tests, ohne laufendes Modell (Modell wird gefakt)
+python -m pytest -q          # 15 Tests, ohne laufendes Modell (Modell wird gefakt)
 python -m eval.run_eval      # Triage-Benchmark gegen das echte Modell (siehe eval/README.md)
 ```
 
@@ -60,12 +76,16 @@ docker compose exec ollama ollama pull qwen2.5:7b
 - **Live-Test in Outlook steht aus.** Backend (inkl. echtem Modell), Eval, Add-in-Build und
   Manifest-Validierung sind verifiziert; das Verhalten *im laufenden Outlook* wurde noch nicht
   durchgespielt (kein Office-Host in der Build-Umgebung).
-- **Kalender (graph-frei):** Das Tagesbriefing nutzt (a) den **aktuell geöffneten Termin** —
-  übernommen via Office.js ohne jede Sonderberechtigung — und (b) manuell eingetragene Termine,
-  dazu die in der Sitzung gesammelten Mail-Zusammenfassungen. Der **vollständige Tageskalender** ist
-  als nächster Schritt über **EWS mit Exchange-Dienstkonto (on-prem)** geplant — bewusst **ohne
-  Microsoft Graph** (keine Azure-App-Registrierung/Admin-Consent nötig). Siehe Issue #8.
-- **Eingangs-Triage:** Outlook bietet clientseitig **kein** "neue Mail eingegangen"-Event; echte
-  Auto-Triage beim Eingang läuft serverseitig (EWS-Benachrichtigungen/Polling, Issue #10).
+- **EWS-Pfade gegen echtes Exchange ungetestet.** Kalender- und Posteingang-Lesen (EWS via
+  `makeEwsRequestAsync`) sind implementiert, typgeprüft und gebaut — aber mangels Exchange-Test-
+  umgebung **noch nicht gegen einen echten Server** verifiziert. Erster Pilot-Test nötig (Issue #11).
+- **Kalender (graph-frei):** Tagesbriefing nutzt EWS-Kalender (klass. Outlook), den aktuell
+  geöffneten Termin (Office.js) **oder** manuelle Eingabe — bewusst **ohne Microsoft Graph**
+  (keine Azure-App/Admin-Consent). Siehe Issue #8.
+- **Eingangs-Triage:** Die *manuelle* Posteingang-Triage (Button) liest die jüngsten Mails per EWS.
+  Eine *automatische* Triage beim Eingang gibt es clientseitig nicht (kein "Mail eingegangen"-Event);
+  das läuft serverseitig (EWS-Benachrichtigungen/Polling, Issue #10).
+- **EWS schreibend (Kategorie auf nicht-geöffnete Mails):** noch nicht umgesetzt — Kategorie wird
+  nur auf der *geöffneten* Mail via Office.js gesetzt (Issue #11).
 - **Kaskaden-Kalibrierung:** Die Eskalation stützt sich noch auf selbstberichtete Konfidenz
   (unzuverlässig, siehe eval/README.md). Kalibriertes Routing ist ein offener Punkt (Issue).

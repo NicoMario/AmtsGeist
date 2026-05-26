@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import date, datetime
 
 from ..config import Settings
@@ -61,3 +62,16 @@ async def triage(
     return TriageResponse(
         result=result, model_used=outcome.model_used, escalated=outcome.escalated
     )
+
+
+async def triage_many(
+    emails: list[EmailIn], router: CascadeRouter, settings: Settings
+) -> list[TriageResponse]:
+    """Stapel-Triage (z. B. Posteingang). Begrenzte Nebenläufigkeit schont das Modell."""
+    semaphore = asyncio.Semaphore(4)
+
+    async def _one(email: EmailIn) -> TriageResponse:
+        async with semaphore:
+            return await triage(TriageRequest(email=email), router, settings)
+
+    return await asyncio.gather(*(_one(e) for e in emails))

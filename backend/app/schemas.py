@@ -77,6 +77,20 @@ class TriageResponse(BaseModel):
     escalated: bool
 
 
+class BatchTriageRequest(BaseModel):
+    emails: list[EmailIn] = Field(min_length=1, max_length=50)
+
+
+class BatchTriageItem(BaseModel):
+    result: TriageResult
+    model_used: str
+    escalated: bool
+
+
+class BatchTriageResponse(BaseModel):
+    items: list[BatchTriageItem]
+
+
 # --------------------------------------------------------------------------- #
 # Zusammenfassung
 # --------------------------------------------------------------------------- #
@@ -119,4 +133,23 @@ class BriefingResponse(BaseModel):
     briefing_markdown: str
     deadlines: list[str]
     focus_blocks: list[str]
+    model_used: str
+
+
+# --------------------------------------------------------------------------- #
+# Antwort-Entwurf
+# --------------------------------------------------------------------------- #
+class DraftReplyLLMOutput(BaseModel):
+    subject: str = Field(description="Betreff der Antwort")
+    body: str = Field(description="Vollständiger Antworttext im Verwaltungston, DSGVO-konform")
+
+
+class DraftReplyRequest(BaseModel):
+    email: EmailIn
+    intent: str = Field(default="", description="Optionale Stichpunkte/Absicht des Sachbearbeiters")
+
+
+class DraftReplyResponse(BaseModel):
+    subject: str
+    body: str
     model_used: str

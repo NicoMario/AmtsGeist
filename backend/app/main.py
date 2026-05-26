@@ -15,14 +15,20 @@ from .config import Settings, get_settings
 from .llm.client import OllamaClient, OllamaError
 from .llm.router import CascadeRouter
 from .schemas import (
+    BatchTriageItem,
+    BatchTriageRequest,
+    BatchTriageResponse,
     BriefingRequest,
     BriefingResponse,
+    DraftReplyRequest,
+    DraftReplyResponse,
     SummarizeRequest,
     SummarizeResponse,
     TriageRequest,
     TriageResponse,
 )
 from .services import briefing as briefing_service
+from .services import draft as draft_service
 from .services import summarize as summarize_service
 from .services import triage as triage_service
 
@@ -91,6 +97,45 @@ async def triage_endpoint(req: TriageRequest, request: Request) -> TriageRespons
         latency_ms=(time.perf_counter() - t0) * 1000,
         category=resp.result.category.value,
         priority=resp.result.priority,
+    )
+    return resp
+
+
+@app.post("/triage/batch", response_model=BatchTriageResponse)
+async def triage_batch_endpoint(
+    req: BatchTriageRequest, request: Request
+) -> BatchTriageResponse:
+    s, router = _settings_of(request), _router_of(request)
+    t0 = time.perf_counter()
+    responses = await triage_service.triage_many(req.emails, router, s)
+    items = [
+        BatchTriageItem(result=r.result, model_used=r.model_used, escalated=r.escalated)
+        for r in responses
+    ]
+    write_audit(
+        s,
+        endpoint="/triage/batch",
+        model_used="(batch)",
+        escalated=any(r.escalated for r in responses),
+        latency_ms=(time.perf_counter() - t0) * 1000,
+        n=len(items),
+    )
+    return BatchTriageResponse(items=items)
+
+
+@app.post("/draft-reply", response_model=DraftReplyResponse)
+async def draft_reply_endpoint(
+    req: DraftReplyRequest, request: Request
+) -> DraftReplyResponse:
+    s, router = _settings_of(request), _router_of(request)
+    t0 = time.perf_counter()
+    resp = await draft_service.draft_reply(req, router, s)
+    write_audit(
+        s,
+        endpoint="/draft-reply",
+        model_used=resp.model_used,
+        escalated=False,
+        latency_ms=(time.perf_counter() - t0) * 1000,
     )
     return resp
 

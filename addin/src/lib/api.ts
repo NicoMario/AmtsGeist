@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "../config";
+import { getBackendUrl } from "../config";
 
 export interface EmailIn {
   from?: string;
@@ -43,8 +43,24 @@ export interface BriefingResponse {
   model_used: string;
 }
 
+export interface BatchTriageItem {
+  result: TriageResult;
+  model_used: string;
+  escalated: boolean;
+}
+
+export interface BatchTriageResponse {
+  items: BatchTriageItem[];
+}
+
+export interface DraftReplyResponse {
+  subject: string;
+  body: string;
+  model_used: string;
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
-  const resp = await fetch(`${BACKEND_URL}${path}`, {
+  const resp = await fetch(`${getBackendUrl()}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -58,7 +74,11 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 
 export const api = {
   triage: (email: EmailIn) => post<TriageResponse>("/triage", { email }),
+  triageBatch: (emails: EmailIn[]) =>
+    post<BatchTriageResponse>("/triage/batch", { emails }),
   summarize: (emails: EmailIn[]) => post<SummarizeResponse>("/summarize", { emails }),
+  draftReply: (email: EmailIn, intent: string) =>
+    post<DraftReplyResponse>("/draft-reply", { email, intent }),
   briefing: (forDate: string, events: CalendarEvent[], flaggedSummaries: string[]) =>
     post<BriefingResponse>("/briefing", {
       for_date: forDate,

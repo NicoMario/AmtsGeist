@@ -76,7 +76,8 @@ button:disabled {
   cursor: default;
 }
 
-textarea {
+textarea,
+input[type="text"] {
   width: 100%;
   border: 1px solid var(--ag-border);
   border-radius: 6px;
@@ -84,6 +85,15 @@ textarea {
   font-family: inherit;
   font-size: 13px;
   margin-bottom: 8px;
+}
+
+.inbox-item {
+  border-top: 1px solid var(--ag-border);
+  padding: 6px 0;
+}
+
+.inbox-item:first-child {
+  border-top: none;
 }
 
 .hint,
