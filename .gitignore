@@ -1,0 +1,16 @@
+# Python
+backend/.venv/
+**/__pycache__/
+*.pyc
+backend/audit.log.jsonl
+backend/.env
+.pytest_cache/
+
+# Node / Add-in
+addin/node_modules/
+addin/dist/
+addin/.env
+
+# OS / Editor
+.DS_Store
+*.swp

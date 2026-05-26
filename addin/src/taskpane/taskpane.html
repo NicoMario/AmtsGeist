@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AmtsGeist</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>AmtsGeist</h1>
+      <p class="subtitle">Souveräner KI-Assistent · lokal &amp; datenschutzkonform</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Aktuelle E-Mail</h2>
+        <div class="btn-row">
+          <button id="btn-summarize" type="button">Zusammenfassen</button>
+          <button id="btn-triage" type="button">Einordnen</button>
+        </div>
+        <div id="mail-result" class="result" hidden></div>
+      </section>
+
+      <section class="card">
+        <h2>Tagesbriefing</h2>
+        <p class="hint">
+          Geöffneten Termin übernehmen (ohne Berechtigungen) oder Termine manuell eintragen
+          (eine Zeile je Termin, Format <code>HH:MM Betreff</code>):
+        </p>
+        <button id="btn-add-appt" type="button">Aktuellen Termin übernehmen</button>
+        <div id="appt-note" class="hint"></div>
+        <textarea id="events-input" rows="4">09:00 Teamrunde Referat 32
+11:00 Bürgersprechstunde
+14:30 Bauausschuss-Vorbesprechung</textarea>
+        <button id="btn-briefing" type="button">Tag vorbereiten</button>
+        <div id="briefing-result" class="result" hidden></div>
+      </section>
+
+      <p id="status" class="status"></p>
+    </main>
+
+    <footer>
+      <span id="backend-note"></span>
+    </footer>
+  </body>
+</html>

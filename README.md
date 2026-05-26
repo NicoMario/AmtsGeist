@@ -76,6 +76,28 @@ Deutschland digitalisiert seine Verwaltung. Doch KI-Systeme, die auf Cloud-Diens
 
 ---
 
+## Outlook-Assistent (MVP)
+
+Ein erster lauffähiger vertikaler Schnitt des Produkts liegt im Repo:
+
+- **`backend/`** — FastAPI-Inferenzdienst ("das Gehirn" fürs Rechenzentrum): `/summarize`,
+  `/triage`, `/briefing`, Modell-Kaskade (qwen2.5:3b → :7b), Constrained-Decoding-Klassifikation,
+  PII-Schicht, datensparsames Audit-Log. Tests grün, gegen lokales Ollama verifiziert.
+- **`addin/`** — Outlook-Add-in (Office.js): Task Pane mit *Zusammenfassen*, *Einordnen* und
+  *Tag vorbereiten*. Build, Typecheck und Manifest-Validierung bestanden.
+- **`backend/eval/`** — Benchmark-Harness mit Golden-Set (dokumentierte Evaluation, EU-AI-Act-tauglich).
+- Start- und Testanleitung: [**docs/ENTWICKLUNG.md**](docs/ENTWICKLUNG.md).
+
+Offene organisatorische/rechtliche Punkte (Vergaberecht, BSI, EU AI Act, DSGVO, Pilotbehörde …)
+sind als [GitHub-Issues](https://github.com/NicoMario/AmtsGeist/issues) erfasst.
+
+## Konzeptdokumente
+
+- [**Architektur-Konzept: Souveräner KI-Assistent für Outlook**](docs/ARCHITEKTUR-Outlook-Assistent.md) — tiefes Design für Mail-Zusammenfassung, Triage/Markierung und Tagesbriefing, angepasst an reale Verwaltungs-Hardware (Thin Client/VDI), mit Modell-Kaskade, Deployment-Profilen und Mermaid-Diagrammen.
+- [**Recherche: Lokale-KI-Assistenten für Outlook (Prior Art)**](docs/recherche-outlook-lokale-ki.md) — Wettbewerbs- und Vorarbeiten-Analyse (GitHub, Produkte, deutscher DSGVO-Kontext).
+
+---
+
 ## Roadmap
 
 - [ ] **v0.1** — Docker-Compose-Stack mit Ollama + Open WebUI
